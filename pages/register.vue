@@ -213,7 +213,7 @@
                     >
                         <button
                             @click="socialLogin('google')"
-                            class="bg-white px-5 py-3 rounded outline-none focus:outline-none shadow hover:shadow-md inline-flex items-center justify-center font-bold ease-linear transition-all duration-150"
+                            class="bg-white px-5 py-3 rounded border-gray-200 border shadow hover:shadow-md inline-flex items-center justify-center font-bold ease-linear transition-all duration-150"
                             type="button"
                         >
                             <img
@@ -224,7 +224,7 @@
                         </button>
                         <button
                             @click="socialLogin('github')"
-                            class="bg-black text-white px-5 py-3 rounded outline-none focus:outline-none shadow inline-flex hover:shadow-md justify-center items-center font-bold ease-linear transition-all duration-150"
+                            class="bg-black text-white px-5 py-3 rounded shadow inline-flex hover:shadow-md justify-center items-center font-bold ease-linear transition-all duration-150"
                             type="button"
                         >
                             <img
@@ -235,7 +235,7 @@
                         </button>
                         <button
                             @click="socialLogin('facebook')"
-                            class="bg-white px-5 py-3 rounded outline-none focus:outline-none shadow hover:shadow-md inline-flex justify-center items-center font-bold ease-linear transition-all duration-150"
+                            class="bg-white px-5 py-3 border-gray-200 border rounded shadow hover:shadow-md inline-flex justify-center items-center font-bold ease-linear transition-all duration-150"
                             type="button"
                         >
                             <img

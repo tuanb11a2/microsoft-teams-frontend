@@ -1,30 +1,31 @@
 <template>
     <div>
-        <Portal to="pageTitle"> Find your account </Portal>
+        <Portal to="pageTitle"> Verify your account </Portal>
         <div class="md:w-1/2 xl:w-1/3 mx-auto">
             <div
                 class="px-5 md:px-10 py-5 rounded-xl shadow-lg bg-white"
             >
                 <div class="font-bold md:text-xl mb-5">
-                    Please enter your email address to find your account.
+                    Please enter 6-digit-code in the email sent to 
+                    <span class="text-blue-500 hover:underline">{{$store.state.auth.forgotPasswordUser}}</span>
                 </div>
                 <input
-                    v-model="user.email"
-                    type="email"
-                    autocomplete="email"
+                    v-model="user.code"
+                    type="text"
+                    v-mask="'######'"
                     :class="{
                         'border-red-500':
-                            error || (submitted && $v.user.email.$error),
+                            error || (submitted && $v.user.code.$error),
                     }"
                     class="appearance-none rounded-xl h-14 relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500"
-                    placeholder="Email address"
-                    @keyup.enter="searchAccount"
+                    placeholder="6 digits code, eg: 070920"
+                    @keyup.enter="verifyCode"
                 />
                 <div
-                    v-if="submitted && $v.user.email.$error"
+                    v-if="submitted && $v.user.code.$error"
                     class="text-red-500 mt-3 font-bold"
                 >
-                    Email address is required!
+                    Invalid code entered!
                 </div>
                 <div
                     v-if="error"
@@ -42,11 +43,11 @@
                             Cancel
                         </button>
                         <button
-                            @click="searchAccount"
+                            @click="verifyCode"
                             :disabled="loading"
                             class="px-7 py-2 rounded text-white font-bold disabled:bg-blue-300 disabled:cursor-not-allowed bg-blue-500 hover:bg-blue-700"
                         >
-                            Search
+                            Continue
                         </button>
                     </div>
                 </div>
@@ -56,10 +57,10 @@
 </template>
 
 <script>
-import { required } from "vuelidate/lib/validators";
+import { required, minLength } from "vuelidate/lib/validators";
 export default {
     head: {
-        title: "Password forget",
+        title: "Verify Code",
         meta: [
             {
                 hid: "description",
@@ -73,7 +74,7 @@ export default {
     data() {
         return {
             user: {
-                email: "",
+                code: "",
             },
             submitted: false,
             loading: false,
@@ -82,7 +83,7 @@ export default {
     },
     validations: {
         user: {
-            email: { required },
+            code: { required, minLength: minLength(6) },
         },
     },
     watch: {
@@ -93,8 +94,13 @@ export default {
             deep:true
         }
     },
+    mounted() {
+        if (!this.$store.state.auth.forgotPasswordUser) {
+            this.$router.push('/login');
+        }
+    },
     methods: {
-        async searchAccount() {
+        async verifyCode() {
             this.loading = true;
             this.submitted = true;
             this.$v.$touch();
@@ -103,9 +109,8 @@ export default {
                 return;
             }
             try {
-                await this.$axios.post("/auth/check-account", this.user);
+                await this.$axios.post("/auth/verify-code", this.user);
                 this.$store.commit('auth/SET_FORGOT_PASSWORD_USER', this.user.email);
-                this.$router.push('/password/verify');
             } catch (e) {
                 this.error = e.response.data.meta.message;
             }

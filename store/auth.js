@@ -2,6 +2,7 @@
 export const state = () => ({
     user: null,
     authToken: null,
+    forgotPasswordUser: null,
 });
 
 // getters
@@ -33,6 +34,13 @@ export const mutations = {
     UPDATE_USER(state, { user }) {
         state.user = user;
     },
+
+    SET_FORGOT_PASSWORD_USER(state, user) {
+        state.forgotPasswordUser = user;
+    }
+
+
+
 };
 
 // actions

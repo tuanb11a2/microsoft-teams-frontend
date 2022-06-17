@@ -1,25 +1,33 @@
 <template>
-    <div
-        class="md:w-1/2 xl:w-1/3 mx-auto"
-    >
-        <Portal to="pageTitle">
-            Welcome to Microsoft Teams
-        </Portal>
+    <div class="md:w-1/2 xl:w-1/3 mx-auto">
+        <Portal to="pageTitle"> Welcome to Microsoft Teams </Portal>
         <div>
-            <form class="space-y-6 px-10 pt-3 pb-10 rounded-3xl shadow-lg bg-white" @submit.prevent="login">
-                <input type="hidden" name="remember" value="true" />
+            <form
+                class="space-y-6 px-10 pt-10 pb-10 rounded-xl shadow-lg bg-white"
+                @submit.prevent="login"
+            >
                 <div class="rounded-md shadow-sm -space-y-px">
                     <div class="mb-5">
                         <input
                             v-model="auth.identity"
                             type="text"
                             autocomplete="email"
-                            :class="error ? 'border-red-500' : ''"
-                            class="appearance-none rounded-xl h-14 relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 "
+                            :class="{
+                                'border-red-500':
+                                    error ||
+                                    (submitted && $v.auth.identity.$error),
+                            }"
+                            class="appearance-none rounded-xl h-14 relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500"
                             placeholder="Email, username or phone number"
                         />
+                        <div
+                            v-if="submitted && $v.auth.identity.$error"
+                            class="text-red-500 font-bold mt-2"
+                        >
+                            Please enter your email, username or phone number!
+                        </div>
                     </div>
-                    <div>   
+                    <div>
                         <input
                             id="password"
                             type="password"
@@ -27,15 +35,26 @@
                             v-model="auth.password"
                             name="password"
                             autocomplete="current-password"
-                            :class="error ? 'border-red-500' : ''"
+                            :class="{
+                                'border-red-500':
+                                    error ||
+                                    (submitted && $v.auth.password.$error),
+                            }"
                             class="appearance-none rounded-xl h-14 relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500"
                             placeholder="Password"
                         />
+                        <div
+                            v-if="submitted && $v.auth.password.$error"
+                            class="text-red-500 font-bold mt-2"
+                        >
+                            Please enter your password!
+                        </div>
+                        <div class="font-bold text-red-500 mt-2" v-if="error">
+                            {{ error }}
+                        </div>
                     </div>
                 </div>
-                <div class="text-sm font-bold text-red-500" v-if="error">{{
-                    error
-                }}</div>
+                
 
                 <div class="sm:flex items-center justify-between">
                     <div class="flex items-center">
@@ -76,10 +95,12 @@
                         <h6 class="font-bold">Or sign in with</h6>
                     </div>
                 </div>
-                <div class="text-center grid lg:grid-cols-3 xl:gap-10 gap-5 pt-3">
+                <div
+                    class="text-center grid lg:grid-cols-3 xl:gap-10 gap-5 pt-3"
+                >
                     <button
                         @click="socialLogin('google')"
-                        class="bg-white px-5 py-3 rounded outline-none focus:outline-none shadow hover:shadow-md inline-flex items-center justify-center font-bold  ease-linear transition-all duration-150"
+                        class="bg-white px-5 py-3 rounded outline-none focus:outline-none shadow hover:shadow-md inline-flex items-center justify-center font-bold ease-linear transition-all duration-150"
                         type="button"
                     >
                         <img
@@ -90,7 +111,7 @@
                     </button>
                     <button
                         @click="socialLogin('github')"
-                        class="bg-black text-white px-5 py-3 rounded outline-none focus:outline-none shadow inline-flex hover:shadow-md justify-center items-center font-bold  ease-linear transition-all duration-150"
+                        class="bg-black text-white px-5 py-3 rounded outline-none focus:outline-none shadow inline-flex hover:shadow-md justify-center items-center font-bold ease-linear transition-all duration-150"
                         type="button"
                     >
                         <img
@@ -101,7 +122,7 @@
                     </button>
                     <button
                         @click="socialLogin('facebook')"
-                        class="bg-white px-5 py-3 rounded outline-none focus:outline-none shadow hover:shadow-md inline-flex justify-center items-center font-bold  ease-linear transition-all duration-150"
+                        class="bg-white px-5 py-3 rounded outline-none focus:outline-none shadow hover:shadow-md inline-flex justify-center items-center font-bold ease-linear transition-all duration-150"
                         type="button"
                     >
                         <img
@@ -129,7 +150,7 @@
 </template>
 
 <script>
-import Swal from "sweetalert2";
+import { required } from "vuelidate/lib/validators";
 
 export default {
     middleware: "guest",
@@ -141,13 +162,28 @@ export default {
                 password: "",
             },
             remember: false,
+            submitted: false,
+            loading: false,
             error: "",
         };
+    },
+    validations: {
+        auth: {
+            identity: { required },
+            password: { required },
+        },
     },
     mounted() {},
     methods: {
         async login() {
             try {
+                this.loading = true;
+                this.submitted = true;
+                this.$v.$touch();
+                if (this.$v.$invalid) {
+                    this.loading = false;
+                    return;
+                }
                 const res = await this.$axios.post("/auth/login", this.auth);
                 this.$store.dispatch("auth/saveAuthToken", {
                     authToken: res.data.access_token,
@@ -158,6 +194,8 @@ export default {
             } catch (e) {
                 this.error = e.response.data.meta.message;
             }
+
+            this.loading = false;
         },
 
         async socialLogin(provider) {
