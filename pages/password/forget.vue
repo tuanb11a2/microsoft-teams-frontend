@@ -105,7 +105,7 @@ export default {
             try {
                 await this.$axios.post("/auth/check-account", this.user);
                 this.$store.commit('auth/SET_FORGOT_PASSWORD_USER', this.user.email);
-                this.$router.push('/password/verify');
+                this.$router.push(this.localePath('/password/verify'));
             } catch (e) {
                 this.error = e.response.data.meta.message;
             }

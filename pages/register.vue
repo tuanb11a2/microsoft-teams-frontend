@@ -253,7 +253,7 @@
                             Already have an account?
                             <nuxt-link
                                 class="text-blue-500 hover:underline"
-                                to="/login"
+                                :to="localePath('login')"
                                 >Login now!</nuxt-link
                             >
                         </h6>

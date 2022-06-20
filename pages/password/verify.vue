@@ -96,7 +96,7 @@ export default {
     },
     mounted() {
         if (!this.$store.state.auth.forgotPasswordUser) {
-            this.$router.push('/login');
+            this.$router.push(this.localePath('/login'));
         }
     },
     methods: {
