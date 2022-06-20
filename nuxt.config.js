@@ -96,11 +96,12 @@ export default {
         detectBrowserLanguage: {
             useCookie: true,
             cookieKey: "lang",
+            alwaysRedirect: true,
             redirectOn: "root", // recommended
         },
         locales: [
-            { code: "en", iso: "en-US", file: "en.js" },
-            { code: "vi", iso: "vi-VN", file: "vi.js" },
+            { code: "en", name: "English", iso: "en-US", file: "en.js" },
+            { code: "vi", name: "Tiếng Việt", iso: "vi-VN", file: "vi.js" },
         ],
         defaultLocale: "vi",
         vueI18n: {

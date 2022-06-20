@@ -79,6 +79,6 @@ export const actions = {
 
         this.$cookiz.remove("authToken");
         commit("LOGOUT");
-        this.$router.push("/login");
+        this.$router.push(localePath("/login"));
     },
 };

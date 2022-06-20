@@ -4,7 +4,8 @@ export default function ({ $axios, app, redirect }) {
             redirect("/server-error");
         }
         if (error.response.status === 401 && app.router.currentRoute.path !== '/login') {
-            redirect("/login");
+            app.$cookiz.remove('authToken');
+            redirect("/unauthorized");
         }
         if (error.response.status === 403) {
             redirect("/forbidden");
