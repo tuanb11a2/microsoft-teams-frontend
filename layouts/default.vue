@@ -14,7 +14,7 @@
                         </div>
                     </a>
                     <div class="col-span-5 my-auto">
-                        <nuxt-link to="/" class="text-white ml-2 text-xl"
+                        <nuxt-link :to="localePath('/')" class="text-white ml-2 text-xl"
                             >Microsoft Teams</nuxt-link
                         >
                     </div>
@@ -45,62 +45,67 @@
                 </div>
 
                 <div class="flex pt-2 justify-end">
-                    <ul
-                        class="list-reset flex justify-between flex-1 md:flex-none items-center"
-                    >
-                        <li class="flex-1 md:flex-none md:mr-3">
-                            <div class="relative inline-block">
-                                <button
-                                    type="button"
-                                    class="text-white"
-                                    @click="toggleDD('settings-menu')"
-                                    id="menu-button"
-                                >
-                                    <i class="fas fa-ellipsis-h"></i>
-                                </button>
-                                <div
-                                    class="origin-top-right invisible absolute right-0 mt-2 w-56 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 divide-y divide-gray-100 focus:outline-none"
-                                    id="settings-menu"
-                                    tabindex="-1"
-                                >
-                                    <div class="py-1" role="none">
-                                        <a
-                                            href="#"
-                                            class="text-gray-700 block hover:bg-gray-200 px-4 py-2 text-sm"
-                                            role="menuitem"
-                                            tabindex="-1"
-                                            id="menu-item-0"
-                                            >Edit</a
-                                        >
-                                    </div>
+                    <div class="text-white mr-3 inline-flex">
+                        <nuxt-link
+                            v-for="locale in availableLocales"
+                            :key="locale.code"
+                            :to="switchLocalePath(locale.code)"
+                            >{{ locale.name }}</nuxt-link
+                        >
+                    </div>
+
+                    <div class="flex-1 md:flex-none md:mr-3">
+                        <div class="relative inline-block">
+                            <button
+                                type="button"
+                                class="text-white"
+                                @click="toggleDD('settings-menu')"
+                                id="menu-button"
+                            >
+                                <i class="fas fa-ellipsis-h"></i>
+                            </button>
+                            <div
+                                class="origin-top-right invisible absolute right-0 mt-2 w-56 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 divide-y divide-gray-100 focus:outline-none"
+                                id="settings-menu"
+                                tabindex="-1"
+                            >
+                                <div class="py-1" role="none">
+                                    <a
+                                        href="#"
+                                        class="text-gray-700 block hover:bg-gray-200 px-4 py-2 text-sm"
+                                        role="menuitem"
+                                        tabindex="-1"
+                                        id="menu-item-0"
+                                        >Edit</a
+                                    >
                                 </div>
                             </div>
-                        </li>
-                        <li class="flex-1 md:flex-none md:mr-3">
-                            <div class="relative inline-block">
-                                <button
-                                    v-if="user"
-                                    @click="toggleDD('profile-menu')"
-                                    class="drop-button text-white focus:outline-none"
-                                >
-                                    {{ user.name }}
-                                </button>
-                                <div
-                                    class="origin-top-right invisible absolute right-0 mt-2 w-56 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 divide-y divide-gray-100 focus:outline-none"
-                                    id="profile-menu"
-                                >
-                                    <div class="py-1">
-                                        <a
-                                            @click="logout"
-                                            type="button"
-                                            class="text-gray-700 cursor-pointer block hover:bg-gray-200 px-4 py-2 text-sm"
-                                            >Logout</a
-                                        >
-                                    </div>
+                        </div>
+                    </div>
+                    <div class="flex-1 md:flex-none md:mr-3">
+                        <div class="relative inline-block">
+                            <button
+                                v-if="user"
+                                @click="toggleDD('profile-menu')"
+                                class="drop-button text-white focus:outline-none"
+                            >
+                                {{ user.name }}
+                            </button>
+                            <div
+                                class="origin-top-right invisible absolute right-0 mt-2 w-56 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 divide-y divide-gray-100 focus:outline-none"
+                                id="profile-menu"
+                            >
+                                <div class="py-1">
+                                    <a
+                                        @click="logout"
+                                        type="button"
+                                        class="text-gray-700 cursor-pointer block hover:bg-gray-200 px-4 py-2 text-sm"
+                                        >Logout</a
+                                    >
                                 </div>
                             </div>
-                        </li>
-                    </ul>
+                        </div>
+                    </div>
                 </div>
             </div>
         </nav>
@@ -166,9 +171,16 @@ import { mapGetters } from "vuex";
 
 export default {
     mixins: [dropdown],
-    computed: mapGetters({
-        user: "auth/user",
-    }),
+    computed: {
+        ...mapGetters({
+            user: "auth/user",
+        }),
+        availableLocales() {
+            return this.$i18n.locales.filter(
+                (i) => i.code !== this.$i18n.locale
+            );
+        },
+    },
     data() {
         return {};
     },
