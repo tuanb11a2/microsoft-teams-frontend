@@ -1,6 +1,6 @@
 <template>
     <div class="md:w-1/2 xl:w-1/3 mx-auto">
-        <Portal to="pageTitle"> Welcome to Microsoft Teams </Portal>
+        <Portal to="pageTitle">{{$t('login.welcome')}}</Portal>
         <div>
             <form
                 class="space-y-6 px-10 pt-10 pb-10 rounded-xl shadow-lg bg-white"
@@ -18,13 +18,13 @@
                                     (submitted && $v.auth.identity.$error),
                             }"
                             class="appearance-none rounded-xl h-14 relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500"
-                            placeholder="Email, username or phone number"
+                            :placeholder="$t('login.identity.placeholder')"
                         />
                         <div
                             v-if="submitted && $v.auth.identity.$error"
                             class="text-red-500 font-bold mt-2"
                         >
-                            Please enter your email, username or phone number!
+                            {{$t('login.identity.error')}}
                         </div>
                     </div>
                     <div>
@@ -41,13 +41,13 @@
                                     (submitted && $v.auth.password.$error),
                             }"
                             class="appearance-none rounded-xl h-14 relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500"
-                            placeholder="Password"
+                            :placeholder="$t('login.password.placeholder')"
                         />
                         <div
                             v-if="submitted && $v.auth.password.$error"
                             class="text-red-500 font-bold mt-2"
                         >
-                            Please enter your password!
+                            {{$t('login.password.placeholder')}}
                         </div>
                         <div class="font-bold text-red-500 mt-2" v-if="error">
                             {{ error }}
@@ -66,16 +66,16 @@
                                 type="checkbox"
                                 class="h-4 w-4 focus:shadow-none focus:ring-0 border-gray-300 rounded"
                             />
-                            <span class="ml-2">Remember me</span>
+                            <span class="ml-2">{{$t('login.remember')}}</span>
                         </label>
                     </div>
 
                     <div class="text-sm">
                         <nuxt-link
-                            to="/password/forget"
+                            :to="localePath('/password/forget')"
                             class="font-medium text-indigo-600 hover:text-indigo-500"
                         >
-                            Forgot your password?
+                            {{$t('login.forgetPassword')}}
                         </nuxt-link>
                     </div>
                 </div>
@@ -83,16 +83,16 @@
                 <div>
                     <button
                         type="submit"
-                        class="w-full flex justify-center items-center py-2 px-4 border border-transparent text-xl font-medium rounded-xl text-white bg-indigo-600 hover:bg-indigo-700 h-12"
+                        class="w-full flex justify-center items-center py-2 px-4 border border-transparent md:text-xl font-medium rounded-xl text-white bg-indigo-600 hover:bg-indigo-700  md:h-12"
                     >
-                        Sign in
+                        {{$t('login.button')}}
                     </button>
                 </div>
             </form>
             <div class="mt-10">
                 <div class="text-center mb-3">
                     <div class="flex-auto">
-                        <h6 class="font-bold">Or sign in with</h6>
+                        <h6 class="font-bold">{{$t('login.orSignIn')}}</h6>
                     </div>
                 </div>
                 <div
@@ -136,11 +136,11 @@
             <div class="mt-10">
                 <div class="flex-auto text-center">
                     <h6 class="font-bold">
-                        Don't have an account?
+                        {{$t('login.dontHaveAccount')}}
                         <nuxt-link
                             class="text-blue-500 hover:underline"
-                            to="/register"
-                            >Sign up now!</nuxt-link
+                            :to="localePath('/register')"
+                            >{{$t('login.signUpNow')}}</nuxt-link
                         >
                     </h6>
                 </div>
@@ -190,7 +190,7 @@ export default {
                     remember: this.remember,
                 });
                 await this.$store.dispatch("auth/fetchUser");
-                this.$router.push("/");
+                this.$router.push(this.localePath('/'));
             } catch (e) {
                 this.error = e.response.data.meta.message;
             }
